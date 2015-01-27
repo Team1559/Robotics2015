@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team1559.robot;
 
+import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -25,15 +26,20 @@ public class Robot extends IterativeRobot {
     Talon rf;
     Talon lr;
     Talon rr;
-    RobotDrive rd;
-    boolean state = false;
+    MecanumDrive md;
+    boolean state = true;
+    Gyro g;
     
     public void robotInit() {
-        joy1 = new Joystick(1);
-        joy2 = new Joystick(2);
-        lf = new Talon(1);
-        rf = new Talon(2);
-        rd = new RobotDrive(lf, rf, lr, rr);
+        joy1 = new Joystick(0);
+        joy2 = new Joystick(1);
+        lf = new Talon(9);
+        rf = new Talon(6);
+        lr = new Talon(7);
+        rr = new Talon(8);
+        md = new MecanumDrive(joy1, lf, lr, rf, rr);
+        g = new Gyro(4); //analog input
+        g.reset();
     }
 
     /**
@@ -47,18 +53,9 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-    	if(joy1.getRawButton(7)){
-    		state = !state;
-    	}
     	
-    	
-    	if(state){
-	    	rd.mecanumDrive_Polar(joy1.getY(), joy1.getX(), joy2.getTwist());
-	        Timer.delay(.01); //necessary?
-    	} else {
-    		rd.mecanumDrive_Cartesian(joy1.getX(), joy1.getY(), joy1.getTwist(), joy2.getTwist());
-	        Timer.delay(.01); //necessary?
-    	}
+    	md.drive(joy1.getX(), joy1.getY(), joy1.getTwist(), g.getAngle());
+
     }
     
     /**
